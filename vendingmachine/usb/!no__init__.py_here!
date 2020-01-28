@@ -1,0 +1,1 @@
+...otherwise this module may conflict with `usb` module that comes from pyusb

@@ -1,0 +1,16 @@
+ConfigParser
+RPi.GPIO
+bitstring
+curlify
+evdev
+huey
+mpyg321
+ntplib
+pexpect
+pycryptodome
+pyserial
+python-json-logger
+requests
+smbus
+supervisor
+transitions

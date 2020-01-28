@@ -1,0 +1,10 @@
+#!/bin/bash
+
+SCRIPT=`realpath -s $0`
+DIR=`dirname $SCRIPT`
+PROJECTROOT=`dirname $DIR`
+DOCKERFILE=$PROJECTROOT/Dockerfile.dev
+CONTAINER_NAME=vendingmachine-rpi-dev
+
+
+sudo docker build -t $CONTAINER_NAME -f $DOCKERFILE $PROJECTROOT

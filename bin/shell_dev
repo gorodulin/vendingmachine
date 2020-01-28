@@ -1,0 +1,25 @@
+#!/bin/sh
+
+SCRIPT=`realpath -s $0`
+DIR=`dirname $SCRIPT`
+PROJECTROOT=`dirname $DIR`
+CONTAINER_NAME=vendingmachine-rpi-dev
+
+sudo docker run \
+  --name=foreteller \
+  --rm \
+  -it \
+  --privileged \
+  --env VENDINGMACHINE_CONFIG_FILE=/app/config.ini \
+  --mount src="$PROJECTROOT",target=/app,type=bind \
+  --env LOGLEVEL=DEBUG \
+  $CONTAINER_NAME /bin/bash
+
+# vendingmachine sh -c 'while sleep 3600; do :; done'
+# -v /dev/bus/usb:/dev/bus/usb \
+# -v /run/udev:/run/udev:ro \
+# --device /dev/gpiomem \
+# --device /dev/ttyUSB0 \
+# --device /dev/usb/lp0 \
+# --device /dev/snd \
+# -p 0.0.0.0:2222:22 \
