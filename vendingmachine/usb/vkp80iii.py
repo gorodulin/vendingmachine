@@ -33,7 +33,7 @@ class Printer:
 
 
     def read(self):
-        """ Read data buffer and returns it to the caller """
+        """ Read data buffer and return it to the caller """
         return self.dev.read(self._ep_in, 16)
 
 
@@ -80,7 +80,7 @@ class VKP80III(Printer):
 
     def align_at_cut(self):
         """ Align at cut. See page 169 """
-        self.raw(GS + b'\xf8') 
+        self.raw(GS + b'\xf8')
 
 
     def align_at_print(self):
@@ -108,7 +108,7 @@ class VKP80III(Printer):
 
 
     def errors(self):
-        """ All errors as list (wo sections """
+        """ All errors as list (wo sections) """
         names = list(chain(*self.get_full_report().values()))
         return names
 
@@ -122,14 +122,14 @@ class VKP80III(Printer):
 
 
     def present_ticket(self):
-        """ Present ticket. See page 114 """
+        """ Present ticket. See manual, page 114 """
         self.raw(FS + b'\x50\x08\x01\x45\xff')
 
 
     def cut_at_black_mark(self):
         #self.reset()
         #self.align_at_print()
-        self.raw(ESC + b'\x64\x04')
+        self.raw(ESC + b'\x64\x04') # Print buffered data and 4 newlines
         #self.align_at_cut()
         self.present_ticket()
 
