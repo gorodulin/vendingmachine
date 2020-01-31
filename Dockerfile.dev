@@ -2,7 +2,6 @@ FROM balenalib/raspberrypi3-python:3.7-buster
 
 RUN echo "$(cat /dev/urandom | tr -dc _A-Z-a-z-0-9 | head -c${1:-10})" > /CONTAINER_ID
 
-
 RUN apt-get update \
     && apt-get -y install --no-install-recommends \
     build-essential \
@@ -16,12 +15,8 @@ RUN curl https://bootstrap.pypa.io/get-pip.py --output get-pip.py \
     && python3 get-pip.py \
     && rm -f get-pip.py
 
-# Set the working directory to /app
-RUN mkdir /app
-WORKDIR /app
-
 # Install Pillow dependencies
-# Dependencies list: https://pillow.readthedocs.io/en/latest/installation.html#external-libraries
+# See: https://pillow.readthedocs.io/en/latest/installation.html#external-libraries
 RUN apt-get update \
     && apt-get -y install --no-install-recommends \
     zlib1g-dev \
@@ -30,32 +25,22 @@ RUN apt-get update \
     libfreetype6-dev \
     && rm -rf /var/lib/apt/lists/*
 
+RUN mkdir /app
+WORKDIR /app
+
 # Install any needed packages specified in requirements.txt
 ADD requirements.txt /app/requirements.txt
 RUN pip3 install --trusted-host pypi.python.org -r requirements.txt
 
-RUN git clone --recurse https://github.com/python-escpos/python-escpos.git /tmp/_escpos \
-    && pip3 install /tmp/_escpos \
-    && rm -rf /tmp/_escpos
-
+# Install CCTALK module fork
 RUN git clone https://github.com/gorodulin/pycctalk.git /tmp/_pycctalk \
     && pip3 install /tmp/_pycctalk \
     && rm -rf /tmp/_pycctalk
 
-#RUN git clone https://github.com/pik-software/Python-OrangeData.git /tmp/_orangedata \
-#    && pip3 install /tmp/_orangedata \
-#    && rm -rf /tmp/_orangedata
-
-
 RUN mkdir /data
-VOLUME /data
 COPY . /app
-#RUN pip3 install --editable /app \
-    #&& pip3 freeze
 
 ENV LOGLEVEL=INFO
 
+VOLUME ["/data"]
 VOLUME ["/sys/fs/cgroup"]
-
-# Run supervisord when the container launches
-CMD ["/usr/local/bin/supervisord -c /app/supervisord/supervisord.conf"]
