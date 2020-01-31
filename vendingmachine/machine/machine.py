@@ -96,53 +96,53 @@ class Machine():
 
     # State machine callbacks:
 
-    def on_enter_idling(self, event):
+    def on_enter_idling(self, _event):
         logger.debug("call on_enter_idling()")
         self.trigger('entertain')
 
 
-    def on_exit_idling(self, event):
+    def on_exit_idling(self, _event):
         logger.debug("call on_exit_idling()")
 
 
-    def on_enter_entertaining(self, event):
+    def on_enter_entertaining(self, _event):
         logger.debug("call on_enter_entertaining()")
         self.button_led.on()
         #self.button.enable()
         #sound.play_random(sound.MUSIC)
 
 
-    def on_exit_entertaining(self, event):
+    def on_exit_entertaining(self, _event):
         logger.debug("call on_exit_entertaining()")
         self.button_led.off()
         #self.button.disable()
         #sound.stop()
 
 
-    def on_timeout_entertaining(self, event):
+    def on_timeout_entertaining(self, _event):
         logger.debug("call on_timeout_entertaining()")
         self.trigger('eject_item')
 
 
-    def on_enter_ejecting(self, event):
+    def on_enter_ejecting(self, _event):
         logger.debug("call on_enter_ejecting()")
         #sound.play_random(sound.BUTTON_PRESS)
         self.dispenser.eject()
         self.try_trigger('idle')
 
 
-    def on_exit_ejecting(self, event):
+    def on_exit_ejecting(self, _event):
         logger.debug("call on_exit_ejecting()")
         #sound.stop()
 
 
-    def on_enter_oos(self, event):
+    def on_enter_oos(self, _event):
         logger.debug("call on_enter_oos()")
         self.front_panel.off()
         self.coin_acceptor.setInhibitOn()
 
 
-    def on_exit_oos(self, event):
+    def on_exit_oos(self, _event):
         logger.debug("call on_exit_oos()")
         self.front_panel.on()
         self.button.enable()
@@ -151,7 +151,7 @@ class Machine():
 
     # Other callbacks:
 
-    def on_button_press(self, _):
+    def on_button_press(self, _event):
         logger.debug("call on_button_press()")
         self.try_trigger('eject_item')
 
