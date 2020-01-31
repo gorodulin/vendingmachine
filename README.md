@@ -24,7 +24,7 @@ Features:
 
 Machine routine:
 
-- Collect coins
+- Collect coins (idle mode)
 - Wait for user to press button
 - Eject an item
 - Generate a receipt
