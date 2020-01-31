@@ -22,19 +22,19 @@ Features:
 - Autorecovery after dispenser failure.
 - Systemctl-controlled container. Autostart and graceful shutdown.
 
-The routine:
+Machine routine:
 
 - Collect coins
 - Wait for user to press button
 - Eject an item
 - Generate a receipt
-- repeat
+- (repeat)
 
 Hardware components:
 
 - Raspberry Pi 3B+
 - Coin acceptor ([CCTALK](https://en.wikipedia.org/wiki/CcTalk) protocol over USB)
-- Dispenser ([ESC/POS](https://en.wikipedia.org/wiki/ESC/P) protoco over USB), model: "Custom VKP80III"
+- Dispenser ([ESC/POS](https://en.wikipedia.org/wiki/ESC/P) protocol over USB), model: "Custom VKP80III"
 - Button switch (GPIO, hw debounce)
 - Button LED backlight (GPIO, MOSFET switch)
 - Front panel backlight (I2C-controlled relay switch)
