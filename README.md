@@ -15,7 +15,7 @@ Features:
 - Saves its state in a built-in persistent file storage optimized for flash based drives.
 - Recovers last state when the error is gone.
 - Indicates current state by flashing LED and controlling front panel backlight.
-- Generates and sends digitally signed receipts to tax authorities through [OrangeData API](https://github.com/orangedata-official/API/blob/master/API%202.15.0%20(English).docx)
+- Generates and sends digitally signed receipts to tax authorities through [OrangeData API](https://github.com/orangedata-official/API/blob/master/API%202.15.0%20(English).docx) (wip)
 - Continuous background self-test, built-in watchdog.
 - Continuous reporting.
 - Autorecovery after power failure.
