@@ -20,20 +20,20 @@ from vendingmachine.gpio import Button, Led
 class Machine():
 
     states = [
-        {'name': 'out_of_service'},
-        {'name': 'collecting_coins'},
+        {'name': 'oos'}, # 'oos' stands for 'out of service'
+        {'name': 'idling'},
         {'name': 'entertaining', 'timeout': config.getint('button', 'press_timeout', fallback=10), 'on_timeout': 'on_timeout_entertaining'},
         {'name': 'ejecting'}]
 
     transitions = [
-        {'trigger': 'collect_coins', 'source': ['out_of_service', 'ejecting'], 'dest': 'collecting_coins'},
-        {'trigger': 'entertain', 'source': 'collecting_coins', 'dest': 'entertaining', 'conditions': 'has_deposit'},
+        {'trigger': 'idle', 'source': ['oos', 'ejecting'], 'dest': 'idling'},
+        {'trigger': 'entertain', 'source': 'idling', 'dest': 'entertaining', 'conditions': 'has_deposit'},
         {'trigger': 'eject_item', 'source': 'entertaining', 'dest': 'ejecting', 'conditions': 'has_deposit'},
-        {'trigger': 'recover', 'source': 'out_of_service', 'dest': 'collecting_coins'},
-        {'trigger': 'turn_off', 'source': ['collecting_coins', 'entertaining'], 'dest': 'out_of_service'}]
+        {'trigger': 'recover', 'source': 'oos', 'dest': 'idling'},
+        {'trigger': 'turn_off', 'source': ['idling', 'entertaining'], 'dest': 'oos'}]
 
     def __init__(self, kwargs=None):
-        self.sm = CustomStateMachine(model=self, states=Machine.states, transitions=Machine.transitions, send_event=True, initial='out_of_service')
+        self.sm = CustomStateMachine(model=self, states=Machine.states, transitions=Machine.transitions, send_event=True, initial='oos')
         self.p9e = PersistentStorage(config.get('persistence', 'directory')) # 'p9e' stands for 'persistence'
         self.deposit = self.p9e.get_int('deposit', fallback=0)
         self.stats = {
@@ -52,7 +52,7 @@ class Machine():
         sleep(2) # @see https://github.com/pyserial/pyserial/issues/86#issuecomment-515116454
         self.watchdog = Watchdog(error_probe_cb=self.has_errors, on_error_cb=self.on_error, on_recover_cb=self.on_recover)
         self.watchdog.start()
-        self.trigger('collect_coins')
+        self.trigger('idle')
 
 
     def sig_handler(self, sig, frame):
@@ -96,13 +96,13 @@ class Machine():
 
     # State machine callbacks:
 
-    def on_enter_collecting_coins(self, event):
-        logger.debug("call on_enter_collecting_coins()")
+    def on_enter_idling(self, event):
+        logger.debug("call on_enter_idling()")
         self.trigger('entertain')
 
 
-    def on_exit_collecting_coins(self, event):
-        logger.debug("call on_exit_collecting_coins()")
+    def on_exit_idling(self, event):
+        logger.debug("call on_exit_idling()")
 
 
     def on_enter_entertaining(self, event):
@@ -128,7 +128,7 @@ class Machine():
         logger.debug("call on_enter_ejecting()")
         #sound.play_random(sound.BUTTON_PRESS)
         self.dispenser.eject()
-        self.try_trigger('collect_coins')
+        self.try_trigger('idle')
 
 
     def on_exit_ejecting(self, event):
@@ -136,14 +136,14 @@ class Machine():
         #sound.stop()
 
 
-    def on_enter_out_of_service(self, event):
-        logger.debug("call on_enter_out_of_service()")
+    def on_enter_oos(self, event):
+        logger.debug("call on_enter_oos()")
         self.front_panel.off()
         self.coin_acceptor.setInhibitOn()
 
 
-    def on_exit_out_of_service(self, event):
-        logger.debug("call on_exit_out_of_service()")
+    def on_exit_oos(self, event):
+        logger.debug("call on_exit_oos()")
         self.front_panel.on()
         self.button.enable()
         self.coin_acceptor.setInhibitOff()
