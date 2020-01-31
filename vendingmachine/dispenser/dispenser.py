@@ -26,7 +26,7 @@ class Dispenser:
 
 
     def eject(self):
-        print("call dispenser.eject()")
+        logger.debug("call dispenser.eject()")
         self._printer.cut_at_black_mark()
         sleep(3)
         self._callback_after_eject()

@@ -8,6 +8,7 @@ PLAYER = MPyg321Player()
 
 PACKAGE = 'vendingmachine.resources.sounds'
 
+# TODO: get rid of this / switch to enum:
 BUTTON_PRESS = 'button_press'
 COIN_INSERT = 'coin_insert'
 COIN_REJECT = 'coin_reject'
@@ -19,7 +20,6 @@ def get_random_mp3_file(subpackage):
     """ Example: get_random_mp3_file(COIN_REJECT) """
     mp3s = []
     subpackage = "{}.{}".format(PACKAGE, subpackage)
-    print(subpackage)
     for n in resource_listdir(subpackage, ''):
         filename = resource_filename(subpackage, n)
         if filename.endswith('.mp3'):
@@ -29,7 +29,7 @@ def get_random_mp3_file(subpackage):
 
 def play_random(subpackage):
     PLAYER.play_song(get_random_mp3_file(subpackage))
-    
+
 
 def stop():
     PLAYER.stop()

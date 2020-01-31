@@ -1,10 +1,15 @@
 # -*- coding: utf-8 -*-
 
 import signal
+import logging.config
 import threading
 from vendingmachine.machine import Machine
 
+logging.config.fileConfig('./logging.ini', disable_existing_loggers=False)
+logger = logging.getLogger(__name__)
+
 if __name__ == '__main__':
+    logger.info('START')
     machine = Machine()
     signal.signal(signal.SIGINT, machine.sig_handler) # Register SIGINT handler
 

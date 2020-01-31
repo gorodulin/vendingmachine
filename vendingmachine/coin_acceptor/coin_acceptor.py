@@ -29,9 +29,9 @@ class MyCoinAcceptor(CoinAcceptor):
 
 
     def onInitCompleted(self):
-        print("Manufacturer:\t\t{}".format(self.manufacturer))
-        print("Equipment Category:\t{}".format(self.equipment_category))
-        print("Product Code:\t\t{}".format(self.product_code))
+        logger.info("CA Manufacturer:\t\t{}".format(self.manufacturer))
+        logger.info("Equipment Category:\t{}".format(self.equipment_category))
+        logger.info("Product Code:\t\t{}".format(self.product_code))
         self.setAcceptableCoins(ACCEPTABLE_COINS)
         self.setInhibitOff()
 
@@ -52,7 +52,6 @@ class MyCoinAcceptor(CoinAcceptor):
             msg.data = struct.pack('B', x)
             response = self.iface.send(msg)
             slug = response.data.decode('ascii')
-            #print(slug)
             bits += "1" if (slug in acceptable_coins_dict) else "0"
         bitarray = BitArray('0b' + bits)
         msg = Message(src=1, dst=self.addr, header=Message.HEADER_MOD_INHIBIT, data=bitarray.bytes)
@@ -60,7 +59,7 @@ class MyCoinAcceptor(CoinAcceptor):
 
 
     def setInhibitOff(self):
-        """ Set inhibit off (all coins) """	
+        """ Set inhibit off (all coins) """
         msg = Message(src=1, dst=self.addr, header=Message.HEADER_MOD_MASTER_INHIBIT, data=b'\x01')
         #self.iface.ser.cancel_read()
         self.pause_polling = True
@@ -71,7 +70,7 @@ class MyCoinAcceptor(CoinAcceptor):
 
 
     def setInhibitOn(self):
-        """ Set inhibit on (all coins) """	
+        """ Set inhibit on (all coins) """
         msg = Message(src=1, dst=self.addr, header=Message.HEADER_MOD_MASTER_INHIBIT, data=b'\x00')
         self.pause_polling = True
         time.sleep(0.2)

@@ -3,7 +3,7 @@
 import os, tempfile, shutil
 
 class OneOffFileStorage:
-    """ Save values in separate files (file per value). Recreates files on every save. Made for flash drives (SDcards etc) """
+    """ Stores values in separate files (one value per file). Recreates files on every save. Made for flash drives (SDcards etc) """
 
     def __init__(self, dir_name):
         self.dir_name = dir_name
@@ -30,19 +30,19 @@ class OneOffFileStorage:
         shutil.move(tmp.name, self._filename(name, extension))
 
 
-    def load(self, name, fallback=''):
+    def get(self, name, fallback=''):
         return self._load(name, 'string', fallback='')
 
 
-    def load_int(self, name, fallback=None):
+    def get_int(self, name, fallback=None):
         return self._load(name, 'int', wrapper=int, fallback=fallback)
 
 
-    def save(self, name, value):
+    def set(self, name, value):
         self._save(name, value, 'string')
 
 
-    def save_int(self, name, value):
+    def set_int(self, name, value):
         self._save(name, str(value) + "\n", 'int')
 
 

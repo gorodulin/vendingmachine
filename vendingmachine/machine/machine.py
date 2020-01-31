@@ -31,14 +31,14 @@ class Machine():
         {'trigger': 'eject_item', 'source': 'entertaining', 'dest': 'ejecting', 'conditions': 'has_deposit'},
         {'trigger': 'recover', 'source': 'out_of_service', 'dest': 'collecting_coins'},
         {'trigger': 'turn_off', 'source': ['collecting_coins', 'entertaining'], 'dest': 'out_of_service'}]
-    
+
     def __init__(self, kwargs=None):
         self.sm = CustomStateMachine(model=self, states=Machine.states, transitions=Machine.transitions, send_event=True, initial='out_of_service')
         self.p9e = PersistentStorage(config.get('persistence', 'directory')) # 'p9e' stands for 'persistence'
-        self.deposit = self.p9e.load_int('deposit', fallback=0)
+        self.deposit = self.p9e.get_int('deposit', fallback=0)
         self.stats = {
-                'cash_box': self.p9e.load_int('cash_box', fallback=0),
-                'items_sold':  self.p9e.load_int('items_sold', fallback=0),
+                'cash_box': self.p9e.get_int('cash_box', fallback=0),
+                'items_sold':  self.p9e.get_int('items_sold', fallback=0),
                 }
         self.item_price = config.getint('item', 'item_price')
         self.front_panel = I2cRelay(**dict(config.items('front_panel')))
@@ -55,8 +55,8 @@ class Machine():
         self.trigger('collect_coins')
 
 
-    def sig_handler(self, sig, frame):                                
-        print('Received interrupt signal')                         
+    def sig_handler(self, sig, frame):
+        logger.warn('Interrupt signal received')
         self.watchdog.stop()
         self.watchdog.join()
         self.coin_acceptor.stop()
@@ -67,23 +67,23 @@ class Machine():
 
 
     def try_trigger(self, trigger_name):
-        """ Run trigger only if it is valid from current state """  
+        """ Run trigger only if it is valid from current state """
         if trigger_name in self.sm.get_triggers(self.state):
             self.trigger(trigger_name)
 
 
     def increase_deposit(self, value):
-        print("call increase_deposit({})".format(value))
+        logger.debug("call increase_deposit({})".format(value))
         self.deposit += value
-        self.p9e.save_int('deposit', self.deposit)
-        print("- deposit: {}".format(self.deposit))
+        self.p9e.set_int('deposit', self.deposit)
+        logger.debug("Current deposit: {}".format(self.deposit))
 
 
     def decrease_deposit(self, value):
-        print("call decrease_deposit({})".format(value))
+        logger.debug("call decrease_deposit({})".format(value))
         self.deposit -= value
-        self.p9e.save_int('deposit', self.deposit)
-        print("- deposit: {}".format(self.deposit))
+        self.p9e.set_int('deposit', self.deposit)
+        logger.debug("Current deposit: {}".format(self.deposit))
 
 
     def has_deposit(self, *event):
@@ -92,62 +92,58 @@ class Machine():
 
     def has_errors(self):
         return len(self.dispenser.errors()) > 0
-        #return any([
-        #    self.dispenser.has_unrecoverable_errors(),
-        #    self.dispenser.has_recoverable_errors(),
-        #])
 
 
     # State machine callbacks:
 
     def on_enter_collecting_coins(self, event):
-        print("call on_enter_collecting_coins()")
+        logger.debug("call on_enter_collecting_coins()")
         self.trigger('entertain')
 
 
     def on_exit_collecting_coins(self, event):
-        print("call on_exit_collecting_coins()")
+        logger.debug("call on_exit_collecting_coins()")
 
 
     def on_enter_entertaining(self, event):
-        print("call on_enter_entertaining()")
+        logger.debug("call on_enter_entertaining()")
         self.button_led.on()
         #self.button.enable()
         #sound.play_random(sound.MUSIC)
 
 
     def on_exit_entertaining(self, event):
-        print("call on_exit_entertaining()")
+        logger.debug("call on_exit_entertaining()")
         self.button_led.off()
         #self.button.disable()
         #sound.stop()
 
 
     def on_timeout_entertaining(self, event):
-        print("call on_timeout_entertaining()")
+        logger.debug("call on_timeout_entertaining()")
         self.trigger('eject_item')
 
 
     def on_enter_ejecting(self, event):
-        print("call on_enter_ejecting()")
+        logger.debug("call on_enter_ejecting()")
         #sound.play_random(sound.BUTTON_PRESS)
         self.dispenser.eject()
         self.try_trigger('collect_coins')
 
 
     def on_exit_ejecting(self, event):
-        print("call on_exit_ejecting()")
+        logger.debug("call on_exit_ejecting()")
         #sound.stop()
 
 
     def on_enter_out_of_service(self, event):
-        print("call on_enter_out_of_service()")
+        logger.debug("call on_enter_out_of_service()")
         self.front_panel.off()
         self.coin_acceptor.setInhibitOn()
 
 
     def on_exit_out_of_service(self, event):
-        print("call on_exit_out_of_service()")
+        logger.debug("call on_exit_out_of_service()")
         self.front_panel.on()
         self.button.enable()
         self.coin_acceptor.setInhibitOff()
@@ -156,39 +152,37 @@ class Machine():
     # Other callbacks:
 
     def on_button_press(self, _):
-        print("call on_button_press()")
+        logger.debug("call on_button_press()")
         self.try_trigger('eject_item')
 
 
     def on_coin_insert(self, value):
-        print("call on_coin_insert({})".format(value))
+        logger.debug("call on_coin_insert({})".format(value))
         self.increase_deposit(value)
         self.stats['cash_box'] += value
-        self.p9e.save_int('cash_box', self.stats['cash_box'])
+        self.p9e.set_int('cash_box', self.stats['cash_box'])
         #sound.play_random(sound.COIN_INSERT)
         self.try_trigger('entertain')
 
 
     def on_ca_error(self, code):
-        # TODO: log/report error
-        pass
+        logger.warn("call on_ca_error({})".format(code))
 
 
     def on_item_ejected(self):
         self.cashier.create_receipt(self.item_price)
         self.decrease_deposit(self.item_price)
         self.stats['items_sold'] += 1
-        self.p9e.save_int('items_sold', self.stats['items_sold'])
+        self.p9e.set_int('items_sold', self.stats['items_sold'])
 
 
     def on_error(self):
-        print("call on_error()")
+        logger.debug("call on_error()")
         self.try_trigger('turn_off')
 
 
     def on_recover(self):
-        print("call on_recover()")
+        logger.debug("call on_recover()")
         self.try_trigger('recover')
-
 
 
