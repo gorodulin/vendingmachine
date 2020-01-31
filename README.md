@@ -39,3 +39,7 @@ Hardware components:
 - Button LED backlight (GPIO, MOSFET switch)
 - Front panel backlight (I2C-controlled relay switch)
 - no hopper, thus no change :-)
+
+TODO:
+
+- tests
