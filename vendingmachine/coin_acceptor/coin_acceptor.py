@@ -1,10 +1,13 @@
 # -*- coding: utf-8 -*-
 
-import struct, time
+import logging
+import struct
+import time
 from bitstring import BitArray
 from cctalk import Message
 from cctalk.coinacceptor import CoinAcceptor
 
+logger = logging.getLogger(__name__)
 
 ACCEPTABLE_COINS = {
     'RU1K0A': 10,  # pos 7 (inhabit err code 134)

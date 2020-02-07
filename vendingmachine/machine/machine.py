@@ -2,6 +2,7 @@
 
 # Author: Vladimir Gorodulin
 
+import logging
 import sys
 from time import sleep
 from . import CustomStateMachine
@@ -16,6 +17,8 @@ from vendingmachine.dispenser import Dispenser
 from vendingmachine.cashier import Cashier
 from vendingmachine.gpio import Button, Led
 
+logger = logging.getLogger(__name__)
+logging.getLogger('transitions').setLevel(logging.INFO)
 
 class Machine():
 

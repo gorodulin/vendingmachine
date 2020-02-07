@@ -11,14 +11,14 @@ class Button:
         self.callback = on_press
         if not GPIO.getmode():
             GPIO.setmode(GPIO.BCM)
-        GPIO.setup(self.channel, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+        GPIO.setup(self.channel, GPIO.IN)#, pull_up_down=GPIO.PUD_DOWN)
         self._enabled = False
 
 
     def enable(self):
         if not self._enabled:
             # events can be GPIO.RISING, GPIO.FALLING, or GPIO.BOTH
-            GPIO.add_event_detect(self.channel, GPIO.RISING, callback=self.callback, bouncetime=300)
+            GPIO.add_event_detect(self.channel, GPIO.RISING, callback=self.callback, bouncetime=200)
             self._enabled = True
 
 

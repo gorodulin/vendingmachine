@@ -5,7 +5,7 @@ import logging.config
 import threading
 from vendingmachine.machine import Machine
 
-logging.config.fileConfig('./logging.ini', disable_existing_loggers=False)
+logging.config.fileConfig('/app/logger.ini', disable_existing_loggers=False)
 logger = logging.getLogger(__name__)
 
 if __name__ == '__main__':
