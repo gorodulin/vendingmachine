@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
 
+import logging
 from time import sleep
 from vendingmachine.config.config import config
 from vendingmachine.usb.printer import VKP80III
 
+logger = logging.getLogger(__name__)
 
 class Dispenser:
     """ Device-specific dispenser. Rewrite it if needed """
