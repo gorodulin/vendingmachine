@@ -1,8 +1,8 @@
 #!/bin/sh
 
-SCRIPT=`realpath -s $0`
-DIR=`dirname $SCRIPT`
-PROJECTROOT=`dirname $DIR`
+CURRENT_DIR="$( cd "$(dirname "$0")" ; pwd -P )"
+PROJECTROOT="$(dirname "$CURRENT_DIR")"
+
 CONTAINER_NAME=vendingmachine-rpi-dev
 
 sudo docker run \

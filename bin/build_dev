@@ -1,8 +1,8 @@
 #!/bin/bash
 
-SCRIPT=`realpath -s $0`
-DIR=`dirname $SCRIPT`
-PROJECTROOT=`dirname $DIR`
+CURRENT_DIR="$( cd "$(dirname "$0")" ; pwd -P )"
+PROJECTROOT="$(dirname "$CURRENT_DIR")"
+
 DOCKERFILE=$PROJECTROOT/Dockerfile.dev
 CONTAINER_NAME=vendingmachine-rpi-dev
 
