@@ -9,6 +9,7 @@ ntplib
 pexpect
 pycryptodome
 pyserial
+pyusb
 python-json-logger
 requests
 smbus
