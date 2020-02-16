@@ -36,7 +36,7 @@ Hardware components:
 - Coin acceptor ([CCTALK](https://en.wikipedia.org/wiki/CcTalk) protocol over USB)
 - Dispenser ([ESC/POS](https://en.wikipedia.org/wiki/ESC/P) protocol over USB), model: "Custom VKP80III"
 - Button switch (GPIO, hw debounce)
-- Button LED backlight (GPIO, MOSFET switch)
+- Button LED backlight (MOSFET switch via GPIO or I2C-controlled relay switch)
 - Front panel backlight (I2C-controlled relay switch)
 - no hopper, thus no change :-)
 

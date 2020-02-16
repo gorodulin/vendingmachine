@@ -13,6 +13,10 @@ class I2cRelay:
         self.relay_number = int(relay_number)
 
 
+    def cleanup(self):
+        self.off()
+
+
     def on(self):
         self.bus.write_byte_data(self.i2c_device_addr, self.relay_number, ON)
 

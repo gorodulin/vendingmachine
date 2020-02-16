@@ -23,7 +23,9 @@ gpio_pin=27
 press_timeout=10
 
 [button_led]
-gpio_pin=26
+i2c_bus_id=1
+i2c_device_addr=16
+relay_number=2
 
 [front_panel]
 i2c_bus_id=1
